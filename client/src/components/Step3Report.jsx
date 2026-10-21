@@ -1,29 +1,34 @@
 import React from 'react'
-import { FaArrowLeft } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom'
 import { motion } from "motion/react"
-import { buildStyles, CircularProgressbar } from 'react-circular-progressbar';
-import 'react-circular-progressbar/dist/styles.css';
+import { buildStyles, CircularProgressbar } from 'react-circular-progressbar'
+import 'react-circular-progressbar/dist/styles.css'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
+import { BsArrowDown } from 'react-icons/bs'
 
 function Step3Report({ report }) {
+  const navigate = useNavigate()
+
   if (!report) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500 text-lg">Loading Report...</p>
+      <div className="min-h-screen bg-[#F7F6F2] flex items-center justify-center">
+        <p className="text-[#696B65] text-sm font-mono uppercase tracking-wider">
+          Retrieving Performance Report...
+        </p>
       </div>
-    );
+    )
   }
-  const navigate = useNavigate()
+
   const {
     finalScore = 0,
     confidence = 0,
     communication = 0,
     correctness = 0,
     questionWiseScore = [],
-  } = report;
+  } = report
 
   const questionScoreData = questionWiseScore.map((score, index) => ({
     name: `Q${index + 1}`,
@@ -31,332 +36,324 @@ function Step3Report({ report }) {
   }))
 
   const skills = [
-    { label: "Confidence", value: confidence },
-    { label: "Communication", value: communication },
-    { label: "Correctness", value: correctness },
-  ];
+    { label: "Confidence & Cadence", value: confidence },
+    { label: "Communication & Articulation", value: communication },
+    { label: "Technical Correctness", value: correctness },
+  ]
 
-  let performanceText = "";
-  let shortTagline = "";
+  let performanceText = ""
+  let shortTagline = ""
 
   if (finalScore >= 8) {
-    performanceText = "Ready for job opportunities.";
-    shortTagline = "Excellent clarity and structured responses.";
+    performanceText = "Exceeds Standard Competency."
+    shortTagline = "Structured answers, concise articulation, strong domain reasoning."
   } else if (finalScore >= 5) {
-    performanceText = "Needs minor improvement before interviews.";
-    shortTagline = "Good foundation, refine articulation.";
+    performanceText = "Meets Core Baseline."
+    shortTagline = "Sound conceptual foundation; improve precision and concise delivery."
   } else {
-    performanceText = "Significant improvement required.";
-    shortTagline = "Work on clarity and confidence.";
+    performanceText = "Requires Deliberate Practice."
+    shortTagline = "Focus on structured reasoning, voice clarity, and eliminating filler."
   }
 
-  const score = finalScore;
-  const percentage = (score / 10) * 100;
-
+  const score = finalScore
+  const percentage = (score / 10) * 100
 
   const downloadPDF = () => {
-  const doc = new jsPDF("p", "mm", "a4");
+    const doc = new jsPDF("p", "mm", "a4")
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const margin = 20
+    const contentWidth = pageWidth - margin * 2
 
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const margin = 20;
-  const contentWidth = pageWidth - margin * 2;
+    let currentY = 25
 
-  let currentY = 25;
+    // Title / Header
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(18)
+    doc.setTextColor(32, 35, 31)
+    doc.text("InterviewIQ.AI — Executive Evaluation Dossier", margin, currentY)
 
-  // ================= TITLE =================
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(20);
-  doc.setTextColor(34, 197, 94);
-  doc.text("AI Interview Performance Report", pageWidth / 2, currentY, {
-    align: "center",
-  });
+    currentY += 4
+    doc.setDrawColor(231, 229, 222)
+    doc.line(margin, currentY + 2, pageWidth - margin, currentY + 2)
 
-  currentY += 5;
+    currentY += 12
 
-  // underline
-  doc.setDrawColor(34, 197, 94);
-  doc.line(margin, currentY + 2, pageWidth - margin, currentY + 2);
+    // Score Summary Box
+    doc.setFillColor(247, 246, 242)
+    doc.roundedRect(margin, currentY, contentWidth, 22, 2, 2, "F")
 
-  currentY += 15;
+    doc.setFontSize(14)
+    doc.setTextColor(41, 71, 53)
+    doc.text(`Overall Evaluation Score: ${finalScore}/10`, margin + 8, currentY + 14)
 
-  // ================= FINAL SCORE BOX =================
-  doc.setFillColor(240, 253, 244);
-  doc.roundedRect(margin, currentY, contentWidth, 20, 4, 4, "F");
+    currentY += 30
 
-  doc.setFontSize(14);
-  doc.setTextColor(0, 0, 0);
-  doc.text(
-    `Final Score: ${finalScore}/10`,
-    pageWidth / 2,
-    currentY + 12,
-    { align: "center" }
-  );
+    // Metric Breakdown
+    doc.setFillColor(255, 255, 255)
+    doc.setDrawColor(231, 229, 222)
+    doc.roundedRect(margin, currentY, contentWidth, 24, 2, 2)
 
-  currentY += 30;
+    doc.setFontSize(10)
+    doc.setTextColor(105, 107, 101)
+    doc.text(`Confidence: ${confidence}/10`, margin + 8, currentY + 10)
+    doc.text(`Communication: ${communication}/10`, margin + 65, currentY + 10)
+    doc.text(`Technical Correctness: ${correctness}/10`, margin + 125, currentY + 10)
 
-  // ================= SKILLS BOX =================
-  doc.setFillColor(249, 250, 251);
-  doc.roundedRect(margin, currentY, contentWidth, 30, 4, 4, "F");
+    currentY += 34
 
-  doc.setFontSize(12);
+    // Professional Assessment
+    let advice = ""
+    if (finalScore >= 8) {
+      advice = "Candidate demonstrated exceptional clarity and command. Continually anchor answers in verifiable architectural results."
+    } else if (finalScore >= 5) {
+      advice = "Demonstrates solid fundamentals. Focus on delivering concise thesis statements before diving into technical implementation."
+    } else {
+      advice = "Requires focused preparation. Formulate responses using the STAR methodology to keep answers tightly structured."
+    }
 
-  doc.text(`Confidence: ${confidence}`, margin + 10, currentY + 10);
-  doc.text(`Communication: ${communication}`, margin + 10, currentY + 18);
-  doc.text(`Correctness: ${correctness}`, margin + 10, currentY + 26);
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(11)
+    doc.setTextColor(32, 35, 31)
+    doc.text("Executive Diagnostic Notes", margin, currentY)
 
-  currentY += 45;
+    currentY += 6
+    doc.setFont("helvetica", "normal")
+    doc.setFontSize(10)
+    doc.setTextColor(105, 107, 101)
+    const splitAdvice = doc.splitTextToSize(advice, contentWidth)
+    doc.text(splitAdvice, margin, currentY)
 
-  // ================= ADVICE =================
-  let advice = "";
+    currentY += 18
 
-  if (finalScore >= 8) {
-    advice =
-      "Excellent performance. Maintain confidence and structure. Continue refining clarity and supporting answers with strong real-world examples.";
-  } else if (finalScore >= 5) {
-    advice =
-      "Good foundation shown. Improve clarity and structure. Practice delivering concise, confident answers with stronger supporting examples.";
-  } else {
-    advice =
-      "Significant improvement required. Focus on structured thinking, clarity, and confident delivery. Practice answering aloud regularly.";
+    // Question Table
+    autoTable(doc, {
+      startY: currentY,
+      margin: { left: margin, right: margin },
+      head: [["#", "Inquiry", "Score", "Feedback Assessment"]],
+      body: questionWiseScore.map((q, i) => [
+        `${i + 1}`,
+        q.question,
+        `${q.score}/10`,
+        q.feedback,
+      ]),
+      styles: {
+        fontSize: 8.5,
+        cellPadding: 4,
+        valign: "top",
+      },
+      headStyles: {
+        fillColor: [53, 87, 67],
+        textColor: 255,
+        halign: "left",
+      },
+      columnStyles: {
+        0: { cellWidth: 10, halign: "center" },
+        1: { cellWidth: 55 },
+        2: { cellWidth: 18, halign: "center" },
+        3: { cellWidth: "auto" },
+      },
+      alternateRowStyles: {
+        fillColor: [247, 246, 242],
+      },
+    })
+
+    doc.save("InterviewIQ_Evaluation_Report.pdf")
   }
 
-  doc.setFillColor(255, 255, 255);
-  doc.setDrawColor(220);
-  doc.roundedRect(margin, currentY, contentWidth, 35, 4, 4);
-
-  doc.setFont("helvetica", "bold");
-  doc.text("Professional Advice", margin + 10, currentY + 10);
-
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-
-  const splitAdvice = doc.splitTextToSize(advice, contentWidth - 20);
-  doc.text(splitAdvice, margin + 10, currentY + 20);
-
-  currentY += 50;
-
-  // ================= QUESTION TABLE =================
-  autoTable(doc, {
-  startY: currentY,
-  margin: { left: margin, right: margin },
-  head: [["#", "Question", "Score", "Feedback"]],
-  body: questionWiseScore.map((q, i) => [
-    `${i + 1}`,
-    q.question,
-    `${q.score}/10`,
-    q.feedback,
-  ]),
-  styles: {
-    fontSize: 9,
-    cellPadding: 5,
-    valign: "top",
-  },
-  headStyles: {
-    fillColor: [34, 197, 94],
-    textColor: 255,
-    halign: "center",
-  },
-  columnStyles: {
-    0: { cellWidth: 10, halign: "center" }, // index
-    1: { cellWidth: 55 }, // question
-    2: { cellWidth: 20, halign: "center" }, // score
-    3: { cellWidth: "auto" }, // feedback
-  },
-  alternateRowStyles: {
-    fillColor: [249, 250, 251],
-  },
-});
-
-
-  doc.save("AI_Interview_Report.pdf");
-};
-
   return (
-    <div className='min-h-screen bg-linear-to-br from-gray-50 to-green-50 px-4 sm:px-6 lg:px-10 py-8'>
-      <div className='mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-        <div className='md:mb-10 w-full flex items-start gap-4 flex-wrap'>
-          <button
-            onClick={() => navigate("/history")}
-            className='mt-1 p-3 rounded-full bg-white shadow hover:shadow-md transition'><FaArrowLeft className='text-gray-600' /></button>
-
-          <div>
-            <h1 className='text-3xl font-bold flex-nowrap text-gray-800'>
-              Interview Analytics Dashboard
-            </h1>
-            <p className='text-gray-500 mt-2'>
-              AI-powered performance insights
-            </p>
-
+    <div className="min-h-screen bg-[#F7F6F2] py-10 px-4 sm:px-6 lg:px-12 text-[#20231F]">
+      <div className="max-w-6xl mx-auto space-y-8">
+        {/* Navigation & Header Strip */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#E7E5DE]">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate("/history")}
+              className="w-9 h-9 rounded-md bg-[#FFFFFF] border border-[#E7E5DE] hover:border-[#355743]/40 flex items-center justify-center text-[#696B65] hover:text-[#20231F] transition cursor-pointer"
+              title="Return to History"
+            >
+              <FaArrowLeft size={12} />
+            </button>
+            <div>
+              <span className="text-[11px] font-mono tracking-widest uppercase text-[#355743] block">
+                Executive Dossier
+              </span>
+              <h1 className="font-serif-luxury text-3xl sm:text-4xl text-[#20231F]">
+                Interview Performance Diagnostics
+              </h1>
+            </div>
           </div>
+
+          <button
+            onClick={downloadPDF}
+            className="bg-[#355743] hover:bg-[#294735] text-[#FFFFFF] text-xs uppercase tracking-wider font-medium px-6 py-3 rounded-md transition shadow-xs flex items-center justify-center gap-2 cursor-pointer self-start sm:self-auto"
+          >
+            <span>Download PDF Dossier</span>
+            <BsArrowDown size={12} />
+          </button>
         </div>
 
-        <button onClick={downloadPDF} className='bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl shadow-md transition-all duration-300 font-semibold text-sm sm:text-base text-nowrap'>Download PDF</button>
-      </div>
-
-
-      <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8'>
-
-        <div className='space-y-6'>
+        {/* Top Analytics Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Card 1: Overall Performance */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="bg-white rounded-2xl sm:rounded-3xl shadow-lg p-6 sm:p-8 text-center">
-
-            <h3 className="text-gray-500 mb-4 sm:mb-6 text-sm sm:text-base">
-              Overall Performance
-            </h3>
-            <div className='relative w-20 h-20 sm:w-25 sm:h-25 mx-auto'>
-              <CircularProgressbar
-                value={percentage}
-                text={`${score}/10`}
-                styles={buildStyles({
-                  textSize: "18px",
-                  pathColor: "#10b981",
-                  textColor: "#ef4444",
-                  trailColor: "#e5e7eb",
-                })}
-              />
-            </div>
-
-            <p className="text-gray-400 mt-3 text-xs sm:text-sm">
-              Out of 10
-            </p>
-
-            <div className="mt-4">
-              <p className="font-semibold text-gray-800 text-sm sm:text-base">
-                {performanceText}
-              </p>
-              <p className="text-gray-500 text-xs sm:text-sm mt-1">
-                {shortTagline}
-              </p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className='bg-white rounded-2xl sm:rounded-3xl shadow-lg p-6 sm:p-8'>
-            <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-6">
-              Skill Evaluation
-            </h3>
-
-            <div className='space-y-5'>
-              {
-                skills.map((s, i) => (
-                  <div key={i}>
-                    <div className='flex justify-between mb-2 text-sm sm:text-base'>
-
-                      <span>{s.label}</span>
-                      <span className='font-semibold text-green-600'>{s.value}</span>
-                    </div>
-
-                    <div className='bg-gray-200 h-2 sm:h-3 rounded-full'>
-                      <div className='bg-green-500 h-full rounded-full'
-                        style={{ width: `${s.value * 10}%` }}
-
-                      ></div>
-
-                    </div>
-
-
-                  </div>
-                ))
-              }
-            </div>
-
-          </motion.div>
-
-
-        </div>
-
-        <div className='lg:col-span-2 space-y-6'>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className='bg-white rounded-2xl sm:rounded-3xl shadow-lg p-5 sm:p-8'>
-            <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-4 sm:mb-6">
-              Performance Trend
-            </h3>
-
-            <div className='h-64 sm:h-72'>
-
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={questionScoreData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis domain={[0, 10]} />
-                  <Tooltip />
-                  <Area type="monotone"
-                    dataKey="score"
-                    stroke="#22c55e"
-                    fill="#bbf7d0"
-                    strokeWidth={3} />
-
-
-                </AreaChart>
-
-              </ResponsiveContainer>
-
-
-            </div>
-
-
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className='bg-white rounded-2xl sm:rounded-3xl shadow-lg p-5 sm:p-8'>
-            <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-6">
-              Question Breakdown
-            </h3>
-            <div className='space-y-6'>
-              {questionWiseScore.map((q, i) => (
-                <div key={i} className='bg-gray-50 p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-gray-200'>
-
-                  <div className='flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-4'>
-                    <div>
-                      <p className="text-xs text-gray-400">
-                        Question {i + 1}
-                      </p>
-
-                      <p className="font-semibold text-gray-800 text-sm sm:text-base leading-relaxed">
-                        {q.question || "Question not available"}
-                      </p>
-                    </div>
-
-
-                    <div className='bg-green-100 text-green-600 px-3 py-1 rounded-full font-bold text-xs sm:text-sm w-fit'>
-                      {q.score ?? 0}/10
-                    </div>
-                  </div>
-
-                  <div className='bg-green-50 border border-green-200 p-4 rounded-lg'>
-                    <p className='text-xs text-green-600 font-semibold mb-1'>
-                      AI Feedback
-                    </p>
-                    <p className='text-sm text-gray-700 leading-relaxed'>
-
-                      {q.feedback && q.feedback.trim() !== ""
-                        ? q.feedback
-                        : "No feedback available for this question."}
-                    </p>
-                  </div>
-
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-[#FFFFFF] border border-[#E7E5DE] rounded-xl p-6 sm:p-8 flex flex-col justify-between"
+          >
+            <div>
+              <span className="text-[11px] font-mono uppercase tracking-wider text-[#92938D] block mb-4">
+                Aggregate Score
+              </span>
+              <div className="flex items-center justify-center my-4">
+                <div className="w-24 h-24">
+                  <CircularProgressbar
+                    value={percentage}
+                    text={`${score}/10`}
+                    styles={buildStyles({
+                      textSize: "20px",
+                      pathColor: "#355743",
+                      textColor: "#20231F",
+                      trailColor: "#E7E5DE",
+                    })}
+                  />
                 </div>
-              ))}
+              </div>
             </div>
 
+            <div className="pt-4 border-t border-[#E7E5DE] text-center">
+              <p className="text-sm font-medium text-[#20231F]">{performanceText}</p>
+              <p className="text-xs text-[#696B65] mt-1 leading-relaxed">{shortTagline}</p>
+            </div>
           </motion.div>
 
+          {/* Card 2: Skill Evaluation Bars */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="bg-[#FFFFFF] border border-[#E7E5DE] rounded-xl p-6 sm:p-8 flex flex-col justify-between"
+          >
+            <div>
+              <span className="text-[11px] font-mono uppercase tracking-wider text-[#92938D] block mb-6">
+                Metric Evaluation
+              </span>
+              <div className="space-y-5">
+                {skills.map((s, i) => (
+                  <div key={i}>
+                    <div className="flex justify-between text-xs mb-1.5">
+                      <span className="text-[#696B65]">{s.label}</span>
+                      <span className="font-mono text-[#20231F] font-semibold">{s.value}/10</span>
+                    </div>
+                    <div className="bg-[#F0EFE9] h-2 rounded-full overflow-hidden">
+                      <div
+                        className="bg-[#355743] h-full rounded-full transition-all duration-500"
+                        style={{ width: `${s.value * 10}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
+            <div className="pt-4 border-t border-[#E7E5DE] text-xs text-[#92938D]">
+              Normalized against candidate cohorts of comparable seniority.
+            </div>
+          </motion.div>
 
+          {/* Card 3: Performance Trend Chart */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-[#FFFFFF] border border-[#E7E5DE] rounded-xl p-6 sm:p-8 flex flex-col justify-between"
+          >
+            <div>
+              <span className="text-[11px] font-mono uppercase tracking-wider text-[#92938D] block mb-4">
+                Question Trajectory
+              </span>
+              <div className="h-44 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={questionScoreData} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="2 2" stroke="#E7E5DE" vertical={false} />
+                    <XAxis dataKey="name" stroke="#92938D" fontSize={11} tickLine={false} />
+                    <YAxis domain={[0, 10]} stroke="#92938D" fontSize={11} tickLine={false} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "#FFFFFF",
+                        border: "1px solid #E7E5DE",
+                        borderRadius: "6px",
+                        fontSize: "12px",
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="score"
+                      stroke="#355743"
+                      fill="#E9EFE8"
+                      strokeWidth={2}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
 
-
+            <div className="pt-4 border-t border-[#E7E5DE] text-xs text-[#92938D]">
+              Inquiry-by-inquiry score stability.
+            </div>
+          </motion.div>
         </div>
-      </div>
 
+        {/* Question Breakdown List */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.15 }}
+          className="bg-[#FFFFFF] border border-[#E7E5DE] rounded-xl p-6 sm:p-8"
+        >
+          <div className="pb-4 mb-6 border-b border-[#E7E5DE]">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-[#92938D] block">
+              Inquiry Breakdown
+            </span>
+            <h2 className="font-serif-luxury text-2xl text-[#20231F] mt-1">
+              Detailed Question-by-Question Feedback
+            </h2>
+          </div>
+
+          <div className="space-y-6">
+            {questionWiseScore.map((q, i) => (
+              <div
+                key={i}
+                className="p-6 rounded-lg bg-[#F7F6F2] border border-[#E7E5DE] space-y-4"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+                  <div className="space-y-1">
+                    <span className="text-[11px] font-mono text-[#355743] uppercase tracking-wider block">
+                      Inquiry {i + 1}
+                    </span>
+                    <p className="font-serif-luxury text-lg text-[#20231F] leading-snug">
+                      "{q.question || "Question not available"}"
+                    </p>
+                  </div>
+                  <div className="px-3 py-1 rounded bg-[#FFFFFF] border border-[#E7E5DE] font-mono text-xs font-semibold text-[#20231F] self-start">
+                    {q.score ?? 0} / 10
+                  </div>
+                </div>
+
+                <div className="p-4 rounded bg-[#FFFFFF] border border-[#E7E5DE]">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#92938D] block mb-1">
+                    AI Evaluation & Guidance
+                  </span>
+                  <p className="text-xs text-[#696B65] leading-relaxed">
+                    {q.feedback && q.feedback.trim() !== ""
+                      ? q.feedback
+                      : "No feedback recorded for this inquiry."}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
     </div>
   )
 }

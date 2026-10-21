@@ -3,116 +3,144 @@ import { useNavigate } from 'react-router-dom'
 import axios from "axios"
 import { ServerUrl } from '../App'
 import { FaArrowLeft } from 'react-icons/fa'
+import { BsArrowRight } from 'react-icons/bs'
+
 function InterviewHistory() {
-    const [interviews, setInterviews] = useState([])
-    const navigate = useNavigate()
+  const [interviews, setInterviews] = useState([])
+  const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
-    useEffect(() => {
-        const getMyInterviews = async () => {
-            try {
-                const result = await axios.get(ServerUrl + "/api/interview/get-interview", { withCredentials: true })
+  useEffect(() => {
+    const getMyInterviews = async () => {
+      try {
+        const result = await axios.get(ServerUrl + "/api/interview/get-interview", { withCredentials: true })
+        setInterviews(result.data)
+        setLoading(false)
+      } catch (error) {
+        console.log(error)
+        setLoading(false)
+      }
+    }
+    getMyInterviews()
+  }, [])
 
-                setInterviews(result.data)
+  return (
+    <div className="min-h-screen bg-[#F7F6F2] py-12 px-6 text-[#20231F]">
+      <div className="max-w-5xl mx-auto space-y-8">
+        {/* Navigation & Header */}
+        <div className="flex items-center justify-between pb-6 border-b border-[#E7E5DE]">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate("/")}
+              className="w-9 h-9 rounded-md bg-[#FFFFFF] border border-[#E7E5DE] hover:border-[#355743]/40 flex items-center justify-center text-[#696B65] hover:text-[#20231F] transition cursor-pointer"
+              title="Return to Home"
+            >
+              <FaArrowLeft size={12} />
+            </button>
+            <div>
+              <span className="text-[11px] font-mono tracking-widest uppercase text-[#355743] block">
+                Historical Dossier
+              </span>
+              <h1 className="font-serif-luxury text-3xl sm:text-4xl text-[#20231F]">
+                Interview Archive & Trajectory
+              </h1>
+            </div>
+          </div>
 
-            } catch (error) {
-                console.log(error)
-            }
+          <button
+            onClick={() => navigate("/interview")}
+            className="bg-[#355743] hover:bg-[#294735] text-[#FFFFFF] text-xs uppercase tracking-wider font-medium px-5 py-2.5 rounded-md transition shadow-xs hidden sm:flex items-center gap-2 cursor-pointer"
+          >
+            <span>New Session</span>
+            <BsArrowRight size={12} />
+          </button>
+        </div>
 
-        }
-
-        getMyInterviews()
-
-    }, [])
-
-
-    return (
-        <div className='min-h-screen bg-linear-to-br from-gray-50 to-emerald-50 py-10' >
-            <div className='w-[90vw] lg:w-[70vw] max-w-[90%] mx-auto'>
-
-                <div className='mb-10 w-full flex items-start gap-4 flex-wrap'>
-                    <button
-                        onClick={() => navigate("/")}
-                        className='mt-1 p-3 rounded-full bg-white shadow hover:shadow-md transition'><FaArrowLeft className='text-gray-600' /></button>
-
-                    <div>
-                        <h1 className='text-3xl font-bold flex-nowrap text-gray-800'>
-                            Interview History
-                        </h1>
-                        <p className='text-gray-500 mt-2'>
-                            Track your past interviews and performance reports
-                        </p>
-
-                    </div>
+        {/* Content Section */}
+        {loading ? (
+          <div className="bg-[#FFFFFF] p-12 rounded-xl border border-[#E7E5DE] text-center">
+            <p className="text-xs font-mono uppercase tracking-wider text-[#92938D]">
+              Loading Archive Records...
+            </p>
+          </div>
+        ) : interviews.length === 0 ? (
+          <div className="bg-[#FFFFFF] p-12 rounded-xl border border-[#E7E5DE] text-center space-y-4">
+            <div className="w-12 h-12 rounded-full bg-[#E9EFE8] text-[#355743] flex items-center justify-center mx-auto text-lg font-serif-luxury">
+              IQ
+            </div>
+            <h2 className="font-serif-luxury text-2xl text-[#20231F]">
+              No archived interviews found.
+            </h2>
+            <p className="text-xs text-[#696B65] max-w-sm mx-auto leading-relaxed">
+              Complete your first mock interview simulation to review executive analytics, score graphs, and actionable feedback.
+            </p>
+            <button
+              onClick={() => navigate("/interview")}
+              className="bg-[#355743] hover:bg-[#294735] text-[#FFFFFF] text-xs uppercase tracking-wider font-medium px-6 py-3 rounded-md transition cursor-pointer inline-flex items-center gap-2 mt-2"
+            >
+              <span>Initiate First Session</span>
+              <BsArrowRight size={12} />
+            </button>
+          </div>
+        ) : (
+          <div className="bg-[#FFFFFF] border border-[#E7E5DE] rounded-xl overflow-hidden divide-y divide-[#E7E5DE]">
+            {interviews.map((item, index) => (
+              <div
+                key={index}
+                onClick={() => navigate(`/report/${item._id}`)}
+                className="p-6 hover:bg-[#F7F6F2] transition-colors cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 group"
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-serif-luxury text-xl text-[#20231F] group-hover:text-[#355743] transition-colors">
+                      {item.role || "General Interview"}
+                    </span>
+                    <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-[#F0EFE9] text-[#696B65]">
+                      {item.mode || "Technical"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#696B65]">
+                    {item.experience || "Not specified"} • Recorded on{" "}
+                    {new Date(item.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </p>
                 </div>
 
-
-                {interviews.length === 0 ?
-                    <div className='bg-white p-10 rounded-2xl shadow text-center'>
-                        <p className='text-gray-500'>
-                            No interviews found. Start your first interview.
-                        </p>
-
+                <div className="flex items-center gap-6 sm:self-center self-start">
+                  <div className="text-left sm:text-right">
+                    <div className="font-serif-luxury text-2xl text-[#20231F]">
+                      {item.finalScore ? `${item.finalScore}/10` : "—"}
                     </div>
-
-                    :
-
-                    <div className='grid gap-6'>
-                        {interviews.map((item, index) => (
-                            <div key={index}
-                            onClick={()=>navigate(`/report/${item._id}`)}
-                             className='bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-100'>
-                                <div className='flex flex-col md:flex-row md:items-center md:justify-between gap-4'>
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-800">
-                                            {item.role}
-                                        </h3>
-
-                                        <p className="text-gray-500 text-sm mt-1">
-                                            {item.experience} • {item.mode}
-                                        </p>
-
-                                        <p className="text-xs text-gray-400 mt-2">
-                                            {new Date(item.createdAt).toLocaleDateString()}
-                                        </p>
-                                    </div>
-
-                                    <div className='flex items-center gap-6'>
-
-                                        {/* SCORE */}
-                                        <div className="text-right">
-                                            <p className="text-xl font-bold text-emerald-600">
-                                                {item.finalScore || 0}/10
-                                            </p>
-                                            <p className="text-xs text-gray-400">
-                                                Overall Score
-                                            </p>
-                                        </div>
-
-                                        {/* STATUS BADGE */}
-                                        <span
-                                            className={`px-4 py-1 rounded-full text-xs font-medium ${item.status === "completed"
-                                                    ? "bg-emerald-100 text-emerald-700"
-                                                    : "bg-yellow-100 text-yellow-700"
-                                                }`}
-                                        >
-                                            {item.status}
-                                        </span>
-
-
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        ))
-                        }
-
+                    <div className="text-[10px] font-mono uppercase tracking-wider text-[#92938D]">
+                      Overall Score
                     </div>
-                }
-            </div>
+                  </div>
 
-        </div>
-    )
+                  <span
+                    className={`px-3 py-1 rounded text-[11px] font-mono uppercase tracking-wider ${
+                      item.status === "completed"
+                        ? "bg-[#E9EFE8] text-[#294735]"
+                        : "bg-[#F0EFE9] text-[#94682A]"
+                    }`}
+                  >
+                    {item.status || "Incomplete"}
+                  </span>
+
+                  <BsArrowRight
+                    size={14}
+                    className="text-[#92938D] group-hover:text-[#20231F] group-hover:translate-x-1 transition"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
 }
 
 export default InterviewHistory
