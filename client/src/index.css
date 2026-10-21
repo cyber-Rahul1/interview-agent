@@ -2,26 +2,47 @@
 
 @layer base {
   :root {
-    --bg-primary: #F7F6F2;
+    --bg-primary: #F8F7F4;
     --surface-main: #FFFFFF;
-    --surface-secondary: #F0EFE9;
-    --text-primary: #20231F;
-    --text-secondary: #696B65;
-    --text-muted: #92938D;
-    --brand-accent: #355743;
-    --brand-accent-dark: #294735;
-    --brand-accent-subtle: #E9EFE8;
-    --border-subtle: #E7E5DE;
-    --status-success: #2E5A44;
+    --surface-secondary: #F2F0EB;
+    --text-primary: #191B18;
+    --text-secondary: #585A54;
+    --text-muted: #858780;
+    --brand-accent: #244633;
+    --brand-accent-dark: #193224;
+    --brand-accent-subtle: #E3EDE2;
+    --border-subtle: #E4E1D8;
+    --border-medium: #D5D1C5;
+    --status-success: #244633;
     --status-warning: #94682A;
     --status-error: #9E3E34;
   }
 
+  html.lenis, html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  .lenis.lenis-scrolling iframe {
+    pointer-events: none;
+  }
+
   html, body {
-    background-color: #F7F6F2;
-    color: #20231F;
+    background-color: #F8F7F4;
+    color: #191B18;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    letter-spacing: -0.011em;
+    letter-spacing: -0.012em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -36,26 +57,31 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Subtle luxury borders and surfaces */
-.surface-card {
+/* Luxury card with subtle warm depth, refined borders, and velvety transitions */
+.luxury-card {
   background-color: #FFFFFF;
-  border: 1px solid #E7E5DE;
-  border-radius: 12px;
+  border: 1px solid #E4E1D8;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(25, 27, 24, 0.04), 0 4px 16px rgba(25, 27, 24, 0.02);
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 280ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.surface-subtle {
-  background-color: #F0EFE9;
-  border: 1px solid #E7E5DE;
+.luxury-card:hover {
+  transform: translateY(-3px);
+  border-color: #C8C4B7;
+  box-shadow: 0 4px 12px rgba(25, 27, 24, 0.06), 0 12px 28px rgba(25, 27, 24, 0.04);
 }
 
 /* Restrained micro-transitions */
 button, a, input, select, textarea {
-  transition: all 160ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Custom focus ring matching quiet luxury */
+/* Custom focus ring */
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: #355743;
-  box-shadow: 0 0 0 1px #355743;
+  border-color: #244633;
+  box-shadow: 0 0 0 1px #244633;
 }

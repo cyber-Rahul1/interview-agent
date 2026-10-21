@@ -29,25 +29,25 @@ function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#F7F6F2]/90 backdrop-blur-md border-b border-[#E7E5DE] transition-all">
+    <header className="sticky top-0 z-40 w-full bg-[#F8F7F4]/90 backdrop-blur-md border-b border-[#E4E1D8] transition-all">
       <div className="max-w-6xl mx-auto px-6 h-18 flex items-center justify-between">
         {/* Brand Logo / Wordmark */}
         <div 
           onClick={() => navigate("/")} 
           className="flex items-center gap-3 cursor-pointer group"
         >
-          <div className="w-8 h-8 rounded-lg bg-[#294735] text-[#F7F6F2] flex items-center justify-center font-serif-luxury text-lg tracking-tight shadow-xs">
+          <div className="w-8 h-8 rounded-lg bg-[#193224] text-[#F8F7F4] flex items-center justify-center font-serif-luxury text-lg tracking-tight shadow-2xs group-hover:bg-[#244633] transition-colors">
             IQ
           </div>
           <div className="flex flex-col">
-            <span className="font-serif-luxury text-xl text-[#20231F] tracking-tight leading-none">
-              InterviewIQ<span className="text-[#355743] font-sans text-xs uppercase tracking-wider ml-1 px-1.5 py-0.5 bg-[#E9EFE8] rounded-sm font-medium">AI</span>
+            <span className="font-serif-luxury text-xl text-[#191B18] tracking-tight leading-none">
+              InterviewIQ<span className="text-[#244633] font-sans text-xs uppercase tracking-wider ml-1.5 px-2 py-0.5 bg-[#E3EDE2] rounded-sm font-semibold">AI</span>
             </span>
           </div>
         </div>
 
         {/* Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8 text-[13px] tracking-wide text-[#696B65]">
+        <nav className="hidden md:flex items-center gap-8 text-[13px] tracking-wide text-[#585A54]">
           <button 
             onClick={() => {
               if (!userData) {
@@ -56,7 +56,7 @@ function Navbar() {
               }
               navigate("/interview")
             }}
-            className="hover:text-[#20231F] transition-colors cursor-pointer"
+            className="hover:text-[#191B18] transition-colors cursor-pointer"
           >
             Practice Room
           </button>
@@ -68,13 +68,13 @@ function Navbar() {
               }
               navigate("/history")
             }}
-            className="hover:text-[#20231F] transition-colors cursor-pointer"
+            className="hover:text-[#191B18] transition-colors cursor-pointer"
           >
             History & Analytics
           </button>
           <button 
             onClick={() => navigate("/pricing")}
-            className="hover:text-[#20231F] transition-colors cursor-pointer"
+            className="hover:text-[#191B18] transition-colors cursor-pointer"
           >
             Credits & Plans
           </button>
@@ -93,11 +93,11 @@ function Navbar() {
                 setShowCreditPopup(!showCreditPopup)
                 setShowUserPopup(false)
               }} 
-              className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#FFFFFF] border border-[#E7E5DE] text-xs font-medium text-[#20231F] hover:border-[#355743]/40 transition cursor-pointer"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#FFFFFF] border border-[#E4E1D8] text-xs font-medium text-[#191B18] hover:border-[#244633]/40 shadow-2xs transition cursor-pointer"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#355743]"></span>
-              <span className="font-mono text-[12px]">{userData?.credits ?? 0}</span>
-              <span className="text-[#696B65] text-[11px] font-normal uppercase tracking-wider">Credits</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-[#244633]"></span>
+              <span className="font-mono text-[12px] font-semibold">{userData?.credits ?? 0}</span>
+              <span className="text-[#585A54] text-[11px] font-normal uppercase tracking-wider">Credits</span>
             </button>
 
             <AnimatePresence>
@@ -107,15 +107,15 @@ function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 4 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 mt-2 w-72 bg-[#FFFFFF] border border-[#E7E5DE] rounded-xl p-5 shadow-lg z-50"
+                  className="absolute right-0 mt-2 w-72 bg-[#FFFFFF] border border-[#E4E1D8] rounded-xl p-5 shadow-xl z-50"
                 >
-                  <div className="text-[11px] uppercase tracking-wider text-[#92938D] font-medium mb-1">
+                  <div className="text-[11px] uppercase tracking-wider text-[#858780] font-medium mb-1">
                     Credit Balance
                   </div>
-                  <div className="text-2xl font-serif-luxury text-[#20231F] mb-2">
-                    {userData?.credits ?? 0} <span className="text-sm font-sans text-[#696B65] font-normal">available</span>
+                  <div className="text-2xl font-serif-luxury text-[#191B18] mb-2">
+                    {userData?.credits ?? 0} <span className="text-sm font-sans text-[#585A54] font-normal">available</span>
                   </div>
-                  <p className="text-xs text-[#696B65] leading-relaxed mb-4">
+                  <p className="text-xs text-[#585A54] leading-relaxed mb-4">
                     Each mock interview session consumes credits for dynamic questions, speech analysis, and executive reports.
                   </p>
                   <button 
@@ -123,7 +123,7 @@ function Navbar() {
                       setShowCreditPopup(false)
                       navigate("/pricing")
                     }} 
-                    className="w-full bg-[#355743] hover:bg-[#294735] text-[#FFFFFF] py-2 rounded-lg text-xs font-medium tracking-wide transition cursor-pointer"
+                    className="w-full bg-[#244633] hover:bg-[#193224] text-[#FFFFFF] py-2 rounded-lg text-xs font-medium tracking-wide transition cursor-pointer shadow-xs"
                   >
                     Purchase Credits
                   </button>
@@ -132,24 +132,27 @@ function Navbar() {
             </AnimatePresence>
           </div>
 
-          {/* Account profile button */}
+          {/* Account profile button / Sign In CTA */}
           <div className="relative">
-            <button
-              onClick={() => {
-                if (!userData) {
-                  setShowAuth(true)
-                  return
-                }
-                setShowUserPopup(!showUserPopup)
-                setShowCreditPopup(false)
-              }} 
-              className="w-8 h-8 rounded-md border border-[#E7E5DE] bg-[#FFFFFF] hover:border-[#355743]/40 flex items-center justify-center text-xs font-medium text-[#20231F] transition cursor-pointer"
-              title={userData ? userData.name : "Sign In"}
-            >
-              {userData ? userData.name.slice(0, 1).toUpperCase() : (
-                <span className="text-xs text-[#696B65]">Sign In</span>
-              )}
-            </button>
+            {userData ? (
+              <button
+                onClick={() => {
+                  setShowUserPopup(!showUserPopup)
+                  setShowCreditPopup(false)
+                }} 
+                className="w-8 h-8 rounded-full border border-[#244633]/30 bg-[#E3EDE2] text-[#193224] hover:bg-[#244633] hover:text-[#FFFFFF] flex items-center justify-center text-xs font-semibold tracking-wide transition cursor-pointer shadow-2xs"
+                title={userData.name}
+              >
+                {userData.name.slice(0, 1).toUpperCase()}
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowAuth(true)}
+                className="px-4 py-1.5 rounded-md bg-[#244633] hover:bg-[#193224] text-[#FFFFFF] text-xs font-medium uppercase tracking-wider transition cursor-pointer shadow-2xs whitespace-nowrap hover:shadow-xs"
+              >
+                Sign In
+              </button>
+            )}
 
             <AnimatePresence>
               {showUserPopup && (
@@ -158,12 +161,12 @@ function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 4 }}
                   transition={{ duration: 0.15 }}
-                  className="absolute right-0 mt-2 w-56 bg-[#FFFFFF] border border-[#E7E5DE] rounded-xl p-3 shadow-lg z-50 text-xs"
+                  className="absolute right-0 mt-2 w-56 bg-[#FFFFFF] border border-[#E4E1D8] rounded-xl p-3 shadow-xl z-50 text-xs"
                 >
-                  <div className="px-3 py-2 border-b border-[#E7E5DE] mb-1">
-                    <p className="text-[11px] uppercase tracking-wider text-[#92938D]">Signed in as</p>
-                    <p className="font-medium text-[#20231F] truncate text-sm mt-0.5">{userData?.name}</p>
-                    <p className="text-[11px] text-[#696B65] truncate">{userData?.email}</p>
+                  <div className="px-3 py-2 border-b border-[#E4E1D8] mb-1">
+                    <p className="text-[11px] uppercase tracking-wider text-[#858780]">Signed in as</p>
+                    <p className="font-medium text-[#191B18] truncate text-sm mt-0.5">{userData?.name}</p>
+                    <p className="text-[11px] text-[#585A54] truncate">{userData?.email}</p>
                   </div>
 
                   <button 
@@ -171,7 +174,7 @@ function Navbar() {
                       setShowUserPopup(false)
                       navigate("/history")
                     }} 
-                    className="w-full text-left px-3 py-2 rounded-md hover:bg-[#F7F6F2] text-[#20231F] transition cursor-pointer"
+                    className="w-full text-left px-3 py-2 rounded-md hover:bg-[#F8F7F4] text-[#191B18] transition cursor-pointer"
                   >
                     Interview Archive
                   </button>
@@ -180,14 +183,14 @@ function Navbar() {
                       setShowUserPopup(false)
                       navigate("/pricing")
                     }} 
-                    className="w-full text-left px-3 py-2 rounded-md hover:bg-[#F7F6F2] text-[#20231F] transition cursor-pointer"
+                    className="w-full text-left px-3 py-2 rounded-md hover:bg-[#F8F7F4] text-[#191B18] transition cursor-pointer"
                   >
                     Pricing & Credits
                   </button>
-                  <div className="my-1 border-t border-[#E7E5DE]"></div>
+                  <div className="my-1 border-t border-[#E4E1D8]"></div>
                   <button 
                     onClick={handleLogout} 
-                    className="w-full text-left px-3 py-2 rounded-md hover:bg-[#F7F6F2] text-[#9E3E34] flex items-center gap-2 transition cursor-pointer"
+                    className="w-full text-left px-3 py-2 rounded-md hover:bg-[#F8F7F4] text-[#9E3E34] flex items-center gap-2 transition cursor-pointer"
                   >
                     <HiOutlineLogout size={14} />
                     Sign Out
